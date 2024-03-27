@@ -26,6 +26,10 @@ repositories {
 dependencies {
     implementation(libs.revanced.patcher)
     implementation(libs.smali)
+    // TODO: Required because build fails without it. Find a way to remove this dependency.
+    implementation(libs.guava)
+    // Used in JsonGenerator.
+    implementation(libs.gson)
 }
 
 kotlin {
@@ -34,9 +38,11 @@ kotlin {
 
 tasks {
     withType(Jar::class) {
+        exclude("app/revanced/meta")
+
         manifest {
-            attributes["Name"] = "ReVanced Patches template"
-            attributes["Description"] = "Patches template for ReVanced."
+            attributes["Name"] = "ReVanced Patches"
+            attributes["Description"] = "Patches for ReVanced."
             attributes["Version"] = version
             attributes["Timestamp"] = System.currentTimeMillis().toString()
             attributes["Source"] = "git@github.com:Bavons/patches.git"
@@ -72,10 +78,20 @@ tasks {
         }
     }
 
+    register<JavaExec>("generatePatchesFiles") {
+        description = "Generate patches files"
+
+        dependsOn(build)
+
+        classpath = sourceSets["main"].runtimeClasspath
+        mainClass.set("app.revanced.generator.MainKt")
+    }
+
     // Needed by gradle-semantic-release-plugin.
     // Tracking: https://github.com/KengoTODA/gradle-semantic-release-plugin/issues/435
     publish {
         dependsOn("buildDexJar")
+        dependsOn("generatePatchesFiles")
     }
 }
 
@@ -83,7 +99,7 @@ publishing {
     repositories {
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/revanced/revanced-patches-template")
+            url = uri("https://maven.pkg.github.com/revanced/revanced-patches")
             credentials {
                 username = System.getenv("GITHUB_ACTOR")
                 password = System.getenv("GITHUB_TOKEN")
@@ -96,8 +112,8 @@ publishing {
             from(components["java"])
 
             pom {
-                name = "ReVanced Patches template"
-                description = "Patches template for ReVanced."
+                name = "ReVanced Patches"
+                description = "Patches for ReVanced."
                 url = "https://revanced.app"
 
                 licenses {
@@ -114,9 +130,9 @@ publishing {
                     }
                 }
                 scm {
-                    connection = "scm:git:git://github.com/revanced/revanced-patches-template.git"
-                    developerConnection = "scm:git:git@github.com:revanced/revanced-patches-template.git"
-                    url = "https://github.com/revanced/revanced-patches-template"
+                    connection = "scm:git:git://github.com/Bavons/patches.git"
+                    developerConnection = "scm:git:git@github.com:Bavons/patches.git"
+                    url = "https://github.com/Bavons/patches"
                 }
             }
         }
