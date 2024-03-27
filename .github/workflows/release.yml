@@ -10,8 +10,10 @@ on:
     branches:
       - main
       - dev
+
 env:
   FORCE_PUBLISH: "true"
+
 jobs:
   release:
     name: Release
@@ -20,18 +22,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          # Make sure the release step uses its own credentials:
-          # https://github.com/cycjimmy/semantic-release-action#private-packages
-          persist-credentials: false
-          fetch-depth: 0
+          persist-credentials: false 
+          fetch-depth: 0 
 
       - name: Cache Gradle
         uses: burrunan/gradle-cache-action@v1
 
+      # --- Add the API Dump Step Here ---
+      - name: Generate Patch API Dump
+        run: ./gradlew :patches:apiDump  # Assuming Gradle
+
       - name: Build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./gradlew build clean
+        run: ./gradlew build clean 
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -40,7 +44,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm install 
 
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@v6
