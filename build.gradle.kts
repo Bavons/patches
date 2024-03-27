@@ -39,7 +39,7 @@ tasks {
             attributes["Description"] = "Patches template for ReVanced."
             attributes["Version"] = version
             attributes["Timestamp"] = System.currentTimeMillis().toString()
-            attributes["Source"] = "git@github.com:revanced/revanced-patches-template.git"
+            attributes["Source"] = "git@github.com:Bavons/patches.git"
             attributes["Author"] = "ReVanced"
             attributes["Contact"] = "contact@revanced.app"
             attributes["Origin"] = "https://revanced.app"
