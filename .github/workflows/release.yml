@@ -10,7 +10,8 @@ on:
     branches:
       - main
       - dev
-
+env:
+  FORCE_PUBLISH: "true"
 jobs:
   release:
     name: Release
